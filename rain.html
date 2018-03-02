@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html{
+  height:100%
+}
+body {
+  background: linear-gradient(to bottom, rgba(224,243,250,1) 1%,rgba(216,240,252,1) 3%,rgba(184,226,246,1) 6%,rgba(70,70,200,1) 100%);
+  height:100%;
+  margin: 0;
+}
+#rainStorm, #ground{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+#rainStorm{
+  bottom: 15%;
+  height: 85%;
+  z-index: 5;
+}
+#ground{
+  border: 1px solid black;
+  top: 80%;
+  height: 20%;
+  z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<canvas id = "rainStorm"> <!--width="640" height="360">-->
+</canvas>
+<canvas id = "ground">
+</canvas>
+<script>
+var ground = document.getElementById("ground")
+var context = ground.getContext("2d")
+var gh = ground.offsetHeight
+var canvas = document.getElementById("rainStorm")
+var drops = []
+var width = canvas.offsetWidth
+var height = canvas.offsetHeight
+canvas.setAttribute("width",width)
+canvas.setAttribute("height",height)
+ground.setAttribute("width",width)
+ground.setAttribute("height",gh)
+var ctx = canvas.getContext("2d")
+ctx.fillStyle = "#ffffff";
+
+
+
+
+var Drop = function(){
+  var x = Math.floor(Math.random() * width)
+  var xbegin = Math.floor(Math.random() + x)
+  var y = Math.floor(Math.random() * -200)
+  var z = Math.floor(Math.random() * 10)+1
+  var xspeed = 0
+  var yspeed = z//Math.floor(Math.random() * 1.4)+4
+  var len = z+2//Math.floor(Math.random() * 5)+3
+  var wid = Math.ceil(z/3)
+  var falling = true
+  function fall(){
+    if (!falling) return
+    switch (Math.floor(Math.random()*10)) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6: break;
+      case 7: x -= 5; break;
+      case 8: x -= 3; break;
+      case 9: x += 2; break;
+    }
+
+    if (x<0){
+      x += width
+    }
+    if (y+yspeed > cap[x]){
+      context.fillRect(x, cap[x] - document.body.offsetHeight + gh , len-1, wid+1)
+      cap[x]--
+
+      xspeed = 0 ; x = xbegin + (x*2)
+      y = Math.floor(Math.random() * -200)
+    }
+    else if (y > height){
+
+      xspeed = 0 ; x = xbegin
+      y = Math.floor(Math.random() * -200)
+    }/*
+    else if (y + yspeed > 900 ){
+      y = 900
+      yspeed = 0
+      falling = false
+    }*/
+    else y += yspeed
+   }
+
+  function show(){ ctx.fillRect(x,y,wid,len)}
+  return { fall:fall, show:show }
+}
+context.fillStyle = "gray";
+context.fillRect(0,55,width,200);
+context.fillStyle = "white"
+function draw(){
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "white";
+  for (var i = 0; i<300; i++){
+    drops[i].fall()
+    drops[i].show()
+  }
+  requestAnimationFrame(draw)
+}
+for (var i = 0 ; i<300; i++){
+  drops.push(new Drop())
+}
+var cap = []
+for (var i = 0; i<width; i++ ){
+  cap.push(document.body.offsetHeight - gh + 55)
+}
+draw()
+
+
+</script>
+</body>
+</html>
